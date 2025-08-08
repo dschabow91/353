@@ -1,0 +1,30 @@
+services:
+  - type: web
+    name: motherlode-cmms
+    env: node
+    plan: free
+    region: oregon
+    buildCommand: |
+      # build frontend
+      cd frontend
+      npm install
+      npm run build
+      cd ..
+      # install backend deps
+      cd backend
+      npm install
+      # move built frontend into backend/public
+      cd ..
+      rm -rf backend/public
+      mkdir -p backend/public
+      cp -R frontend/dist/* backend/public/
+    startCommand: "cd backend && npm start"
+    envVars:
+      - key: NODE_VERSION
+        value: 20
+      - key: JWT_SECRET
+        generateValue: true
+    disk:
+      name: uploads
+      mountPath: /opt/render/project/src/backend/uploads
+      sizeGB: 1
